@@ -6,8 +6,8 @@ from nltk.tokenize import word_tokenize
 from collections import Counter
 
 # Download necessary NLTK data
-nltk.download('punkt')
-nltk.download('stopwords')
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
 
 def analyze_sentiment(text):
     blob = TextBlob(text)
@@ -49,23 +49,26 @@ def summarize_announcement(announcement, max_summary_length=3):
     summary = '. '.join(relevant_sentences[:max_summary_length]) + '.'
     return summary.strip()
 
-def process_announcements(file_path):
-    with open(file_path, 'r', encoding='utf-8') as f:
+def process_announcements(input_file, output_file):
+    with open(input_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
     
-    for announcement in data['announcements']:
-        title = announcement['title']
-        content = announcement['content']
-        
-        sentiment = analyze_sentiment(content)
-        keywords = extract_keywords(content)
-        summary = summarize_announcement(announcement)
-        
-        print(f"Title: {title}")
-        print(f"Sentiment: {sentiment}")
-        print(f"Keywords: {', '.join(keywords)}")
-        print(f"Summary: {summary}")
-        print("-" * 50)
+    with open(output_file, 'w', encoding='utf-8') as f:
+        for announcement in data['announcements']:
+            title = announcement['title']
+            content = announcement['content']
+            
+            sentiment = analyze_sentiment(content)
+            keywords = extract_keywords(content)
+            summary = summarize_announcement(announcement)
+            
+            f.write(f"Title: {title}\n")
+            f.write(f"Sentiment: {sentiment}\n")
+            f.write(f"Keywords: {', '.join(keywords)}\n")
+            f.write(f"Summary: {summary}\n")
+            f.write("-" * 50 + "\n\n")
+    
+    print(f"Analysis results have been saved to {output_file}")
 
 # Process the announcements
-process_announcements('adgm_announcements.json')
+process_announcements('adgm_announcements.json', 'announcement_analysis.txt')
