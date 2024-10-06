@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADGM Announcements Search</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      #results {
+        margin-top: 20px;
+      }
+      .announcement {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ADGM Announcements Search</h1>
+    <input type="text" id="searchInput" placeholder="Enter search tags" />
+    <button onclick="search()">Search</button>
+    <div id="results"></div>
+
+    <script>
+      async function search() {
+        const searchTerm = document.getElementById("searchInput").value;
+        const response = await fetch(
+          `http://3.90.18.26:5000/search?tags=${searchTerm}`
+        );
+        const data = await response.json();
+        displayResults(data.results);
+      }
+
+      function displayResults(results) {
+        const resultsDiv = document.getElementById("results");
+        resultsDiv.innerHTML = "";
+        results.forEach((result) => {
+          const announcementDiv = document.createElement("div");
+          announcementDiv.className = "announcement";
+          announcementDiv.innerHTML = `
+                    <h2>${result.title}</h2>
+                    <p><strong>Date:</strong> ${result.date}</p>
+                    <p><strong>Source:</strong> ${result.source}</p>
+                    <p>${result.content.substring(0, 200)}...</p>
+                    <a href="${result.url}" target="_blank">Read more</a>
+                `;
+          resultsDiv.appendChild(announcementDiv);
+        });
+      }
+    </script>
+  </body>
+</html>
